@@ -6,7 +6,7 @@ Holds all code for QMK keyboards in one place, rather than split across seperate
 - jbar21's [repo](https://github.com/jbarr21/qmk_userspace) was also used for reference
 
 # Makefile
-used to compile easily with `make`
+used to easily compile keymaps with `make`
 Adapted from [Patrick Elmquist's repo](https://github.com/patrick-elmquist/keymaps)
 
 ## make commands
