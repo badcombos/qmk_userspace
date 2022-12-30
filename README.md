@@ -6,15 +6,15 @@ Holds all code for QMK keyboards in one place, rather than split across seperate
 - jbar21's [repo](https://github.com/jbarr21/qmk_userspace) was also used for reference
 
 # Makefile
-used to easily compile keymaps with `make`
-Adapted from [Patrick Elmquist's repo](https://github.com/patrick-elmquist/keymaps)
+Used to easily compile keymaps with `make`
+Makefile adapted from [Patrick Elmquist's repo](https://github.com/patrick-elmquist/keymaps)
 
-## make commands
+## Make Commands
 1. `make setup`
-clones qmk:master through git submodules
+Clones qmk:master through git submodules
 2. `make <keyboard>`
-compiles specific keyboard
+Compiles specific keyboard
 3. `make all`
-compiles all keyboard
+Compiles all keyboard
 3. `make clean`
-removes qmk submodules and `./build` folder
+Removes qmk submodules and `./build` folder
