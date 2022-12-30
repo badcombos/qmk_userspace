@@ -1,0 +1,3 @@
+COMB(ecs_combo,		KC_ESC,		KC_W, KC_E)
+COMB(tab_combo,		KC_TAB,		KC_D, KC_F)
+COMB(ent_combo,		KC_ENT,		KC_S, KC_D, KC_F)

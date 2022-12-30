@@ -1,0 +1,15 @@
+{
+	"author": "",
+	"documentation": "Wrapper based keymap",
+	"keyboard": "planck/rev6_drop",
+	"keymap": "badcombos",
+	"layout": "LAYOUT_planck_wrapper",
+	"layers": [
+		[ "CONV_PLANCK(BASE)" ],
+		[ "CONV_PLANCK(NAV)" ],
+		[ "CONV_PLANCK(NUM)" ],
+		[ "CONV_PLANCK(ADJ)" ]
+	],
+	"notes": "",
+	"version": 1
+}

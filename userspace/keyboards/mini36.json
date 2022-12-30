@@ -1,0 +1,15 @@
+{
+	"author": "",
+	"documentation": "Wrapper based keymap",
+	"keyboard": "controllerworks/mini36",
+	"keymap": "badcombos",
+	"layout": "LAYOUT_mini36_wrapper",
+	"layers": [
+		[ "BASE" ],
+		[ "NAV" ],
+		[ "NUM" ],
+		[ "ADJ" ]
+	],
+	"notes": "",
+	"version": 1
+}
