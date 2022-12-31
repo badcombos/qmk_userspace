@@ -60,7 +60,6 @@ bool override_helper(bool b, keyrecord_t *record, uint16_t keycode){
 	return false;
 }
 
-
 /*
  * -----------------------------------------------------------------------------------
  *  Process User Record
@@ -127,9 +126,11 @@ xprintf("KL: row: %u, column: %u, pressed: %u\n", record->event.key.col, record-
  *  https://github.com/qmk/qmk_firmware/blob/master/docs/ref_functions.md
  * -----------------------------------------------------------------------------------
 */
-// layer_state_t layer_state_set_user(layer_state_t state) {
-// 	return update_tri_layer_state(state, _NAV, _NUM, _ADJ);
-// }
+#ifndef IS_PLANCK //if keyboard is not planck
+layer_state_t layer_state_set_user(layer_state_t state) {
+	return update_tri_layer_state(state, _NAV, _NUM, _ADJ);
+}
+#endif
 
 /*
  * -----------------------------------------------------------------------------------
@@ -138,31 +139,25 @@ xprintf("KL: row: %u, column: %u, pressed: %u\n", record->event.key.col, record-
  * -----------------------------------------------------------------------------------
 */
 #ifdef IS_PLANCK
-
-void keyboard_post_init_user(void) {
-	rgblight_enable_noeeprom(); // enables Rgb, without saving settings
-	rgblight_sethsv_noeeprom(HSV_GREEN); // sets the color to teal/cyan without saving
-}
-
 // bool is_qwerty = true;
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-		state = update_tri_layer_state(state, _NAV, _NUM, _ADJ);
-		switch (get_highest_layer(state)) {
-			case _NAV:
-				rgblight_setrgb(RGB_RED);
-				break;
-			case _NUM:
-				rgblight_setrgb(RGB_CYAN);
-				break;
-			case _ADJ:
-				rgblight_setrgb(RGB_PURPLE);
-				break;
-			default: //for any other layers, or the default layer
-				rgblight_setrgb(RGB_GREEN);
-				// is_qwerty ? rgblight_setrgb(RGB_GREEN) : rgblight_setrgb(RGB_BLUE) ;
-				break;
-		}
+	state = update_tri_layer_state(state, _NAV, _NUM, _ADJ);
+	switch (get_highest_layer(state)) {
+		case _NAV:
+			rgblight_setrgb(RGB_RED);
+			break;
+		case _NUM:
+			rgblight_setrgb(RGB_CYAN);
+			break;
+		case _ADJ:
+			rgblight_setrgb(RGB_PURPLE);
+			break;
+		default: //for any other layers, or the default layer
+			rgblight_setrgb(RGB_GREEN);
+			// is_qwerty ? rgblight_setrgb(RGB_GREEN) : rgblight_setrgb(RGB_BLUE) ;
+			break;
+	}
 	return state;
 }
 
@@ -172,9 +167,79 @@ layer_state_t layer_state_set_user(layer_state_t state) {
  *  https://docs.qmk.fm/#/custom_quantum_functions?id=keyboard-post-initialization-code
  * -----------------------------------------------------------------------------------
 */
-// 
+void keyboard_post_init_user(void) {
+	rgblight_enable_noeeprom(); // enables Rgb, without saving settings
+	rgblight_sethsv_noeeprom(HSV_GREEN); // sets the color to teal/cyan without saving
+}
 
 #endif
+
+/*
+ * -----------------------------------------------------------------------------------
+ *  only allow combos on the base layer
+ *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_combo.md
+ * -----------------------------------------------------------------------------------
+*/
+bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
+	if (layer_state_is(_BASE)) { 
+		return true; 
+	}
+	return false;
+}
+
+#ifdef OLED_ENABLE
+bool oled_task_user(void) {
+	
+	// Host Keyboard Layer Status
+	oled_write_P(PSTR("Layer: "), false);
+
+	switch (get_highest_layer(layer_state)) {
+		case _BASE:
+			oled_write_P(PSTR("BASE-QWERTY\n"), false);
+			break;
+		case _NAV:
+			oled_write_P(PSTR("NAVIGATION\n"), false);
+			break;
+		case _NUM:
+			oled_write_P(PSTR("NUMBERS\n"), false);
+			break;
+		case _ADJ:
+			oled_write_P(PSTR("SETTINGS\n"), false);
+			break;            
+		default:
+			// Or use the write_ln shortcut over adding '\n' to the end of your string
+			oled_write_ln_P(PSTR("Undefined"), false);
+	}
+
+	// //empty line for seperation
+	// oled_write_ln_P("", false);
+
+	// oled_write_P(PSTR("NAV STATUS: "), false);
+	// switch(nav_state){
+	// 	case 0: 
+	// 		oled_write_P(PSTR("DISABLED\n"), false);
+	// 		break;
+	// 	case 1: 
+	// 		oled_write_P(PSTR("DEFAULT\n"), false);
+	// 		break;
+	// 	case 2: 
+	// 		oled_write_P(PSTR("SUPER\n"), false);
+	// 		break;
+	// 	case 3: 
+	// 		oled_write_P(PSTR("MUSIC\n"), false);
+	// 		break;
+	// }
+
+	// Host Keyboard LED Status
+	led_t led_state = host_keyboard_led_state();
+	oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
+	oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
+	oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
+	
+	return false;
+	
+}
+#endif //oled enable ifdef
 
 /*
  * -----------------------------------------------------------------------------------

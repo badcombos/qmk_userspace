@@ -15,6 +15,6 @@ Clones qmk:master through git submodules
 2. `make <keyboard>`
 Compiles specific keyboard
 3. `make all`
-Compiles all keyboard
+Compiles all keyboards
 3. `make clean`
 Removes qmk submodules and `./build` folder

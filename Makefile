@@ -1,5 +1,5 @@
-
-USER_PATH = users/badcombos/keyboards
+USER = badcombos
+USER_PATH = users/$(USER)/keyboards
 KEYBOARDS = planck mini36
 
 # keyboard names 
@@ -10,6 +10,12 @@ all: $(KEYBOARDS)
 
 .PHONY: $(KEYBOARDS)
 $(KEYBOARDS):
+	# cleanup old symlinks
+	rm -rf qmk_firmware/users/$(USER)
+
+	# add new symlinks
+	ln -s $(shell pwd)/userspace qmk_firmware/users/$(USER)
+
 	cd qmk_firmware/; qmk compile $(USER_PATH)/$(NAME_$@).json
 
 	# since qmk's makefile does not support changing the output dirctory of qmk compile
