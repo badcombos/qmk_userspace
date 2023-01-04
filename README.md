@@ -2,7 +2,7 @@
 Holds all code for QMK keyboards in one place, rather than split across seperate folders
 
 ## Userspace Inspiration
-- filterpaper's tutorial [tutorial](https://filterpaper.github.io/qmk/userspace) and [repo](https://github.com/filterpaper/qmk_userspace) 
+- filterpaper's [tutorial](https://filterpaper.github.io/qmk/userspace) and [repo](https://github.com/filterpaper/qmk_userspace) 
 - jbar21's [repo](https://github.com/jbarr21/qmk_userspace) was also used for reference
 
 # Makefile
