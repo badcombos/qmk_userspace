@@ -6,6 +6,10 @@
 #define TAPPING_TERM 150
 #define TAPPING_TERM_PER_KEY
 
+#ifdef AUTO_SHIFT_ENABLE
+    #define AUTO_SHIFT_TIMEOUT 200
+#endif
+
 //https://github.com/qmk/qmk_firmware/blob/master/docs/feature_rgblight.md#configuration
 #define RGBLIGHT_SLEEP
 

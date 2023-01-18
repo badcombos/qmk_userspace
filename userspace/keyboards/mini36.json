@@ -6,6 +6,8 @@
 	"layout": "LAYOUT_mini36_wrapper",
 	"layers": [
 		[ "BASE" ],
+		[ "GAME" ],
+		[ "COLE" ],
 		[ "NAV" ],
 		[ "NUM" ],
 		[ "ADJ" ]

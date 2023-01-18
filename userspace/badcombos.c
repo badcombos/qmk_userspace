@@ -4,7 +4,6 @@
 #include "layout.h"
 #include "g/keymap_combo.h"
 
-
 /*
  * -----------------------------------------------------------------------------------
  *  Key Overrides
@@ -60,6 +59,18 @@ bool override_helper(bool b, keyrecord_t *record, uint16_t keycode){
 	return false;
 }
 
+// https://github.com/qmk/qmk_firmware/blob/master/docs/tap_hold.md
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+	switch (keycode) {
+		case MOD_SPC:
+			return 400;
+		case HRM_A:
+			return 400;
+		default:
+			return TAPPING_TERM;
+	}
+}
+
 /*
  * -----------------------------------------------------------------------------------
  *  Process User Record
@@ -97,18 +108,6 @@ xprintf("KL: row: %u, column: %u, pressed: %u\n", record->event.key.col, record-
 		// 	return !(override_helper(nav_state == 3, record, KC_MPLY));
 		// 	//KC_HYPR ,KC_MEH  ,KC_GC   ,		  KC_DEL  ,_______ , KC_ENT
 
-		case KC_A:
-			if (record->event.pressed && tild_held) {
-				SEND_STRING(SS_LALT(SS_TAP(X_TAB)));
-				return false;
-			}
-			break;
-		case KC_S:
-			if (record->event.pressed && tild_held) {
-				SEND_STRING(SS_LALT(SS_LSFT(SS_TAP(X_TAB))));
-				return false;
-			}
-			break;
 		case C_TOGGLE:
 			if (record->event.pressed) {
 				nav_state = (nav_state < nav_state_max)? nav_state+1: 0;
@@ -126,38 +125,35 @@ xprintf("KL: row: %u, column: %u, pressed: %u\n", record->event.key.col, record-
  *  https://github.com/qmk/qmk_firmware/blob/master/docs/ref_functions.md
  * -----------------------------------------------------------------------------------
 */
-#ifndef IS_PLANCK //if keyboard is not planck
-layer_state_t layer_state_set_user(layer_state_t state) {
-	return update_tri_layer_state(state, _NAV, _NUM, _ADJ);
-}
-#endif
-
-/*
- * -----------------------------------------------------------------------------------
- *  Planck RGB UnderGlow
- *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_rgblight.md
- * -----------------------------------------------------------------------------------
-*/
-#ifdef IS_PLANCK
-// bool is_qwerty = true;
-
 layer_state_t layer_state_set_user(layer_state_t state) {
 	state = update_tri_layer_state(state, _NAV, _NUM, _ADJ);
-	switch (get_highest_layer(state)) {
-		case _NAV:
-			rgblight_setrgb(RGB_RED);
-			break;
-		case _NUM:
-			rgblight_setrgb(RGB_CYAN);
-			break;
-		case _ADJ:
-			rgblight_setrgb(RGB_PURPLE);
-			break;
-		default: //for any other layers, or the default layer
-			rgblight_setrgb(RGB_GREEN);
-			// is_qwerty ? rgblight_setrgb(RGB_GREEN) : rgblight_setrgb(RGB_BLUE) ;
-			break;
-	}
+
+	#ifdef IS_PLANCK
+	/*
+	 * -----------------------------------------------------------------------------------
+	 *  Planck RGB UnderGlow
+	 *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_rgblight.md
+	 * -----------------------------------------------------------------------------------
+	*/
+		// bool is_qwerty = true;
+
+		switch (get_highest_layer(state)) {
+			case _NAV:
+				rgblight_setrgb(RGB_RED);
+				break;
+			case _NUM:
+				rgblight_setrgb(RGB_CYAN);
+				break;
+			case _ADJ:
+				rgblight_setrgb(RGB_PURPLE);
+				break;
+			default: //for any other layers, or the default layer
+				rgblight_setrgb(RGB_GREEN);
+				// is_qwerty ? rgblight_setrgb(RGB_GREEN) : rgblight_setrgb(RGB_BLUE) ;
+				break;
+		}
+	#endif 
+
 	return state;
 }
 
@@ -167,11 +163,11 @@ layer_state_t layer_state_set_user(layer_state_t state) {
  *  https://docs.qmk.fm/#/custom_quantum_functions?id=keyboard-post-initialization-code
  * -----------------------------------------------------------------------------------
 */
+#ifdef IS_PLANCK
 void keyboard_post_init_user(void) {
 	rgblight_enable_noeeprom(); // enables Rgb, without saving settings
 	rgblight_sethsv_noeeprom(HSV_GREEN); // sets the color to teal/cyan without saving
 }
-
 #endif
 
 /*
@@ -193,9 +189,18 @@ bool oled_task_user(void) {
 	// Host Keyboard Layer Status
 	oled_write_P(PSTR("Layer: "), false);
 
-	switch (get_highest_layer(layer_state)) {
+	/*
+	 * -----------------------------------------------------------------------------------
+	 *  trigger on layer change AND default layer change from:
+	 *  https://www.reddit.com/r/olkb/comments/o5924u/comment/h2pq9rd/?utm_source=share&utm_medium=web2x&context=3
+	 * -----------------------------------------------------------------------------------
+	*/
+	switch (get_highest_layer(layer_state|default_layer_state)) {
 		case _BASE:
 			oled_write_P(PSTR("BASE-QWERTY\n"), false);
+			break;
+		case _GAME:
+			oled_write_P(PSTR("BASE-GAMING\n"), false);
 			break;
 		case _NAV:
 			oled_write_P(PSTR("NAVIGATION\n"), false);
@@ -210,25 +215,6 @@ bool oled_task_user(void) {
 			// Or use the write_ln shortcut over adding '\n' to the end of your string
 			oled_write_ln_P(PSTR("Undefined"), false);
 	}
-
-	// //empty line for seperation
-	// oled_write_ln_P("", false);
-
-	// oled_write_P(PSTR("NAV STATUS: "), false);
-	// switch(nav_state){
-	// 	case 0: 
-	// 		oled_write_P(PSTR("DISABLED\n"), false);
-	// 		break;
-	// 	case 1: 
-	// 		oled_write_P(PSTR("DEFAULT\n"), false);
-	// 		break;
-	// 	case 2: 
-	// 		oled_write_P(PSTR("SUPER\n"), false);
-	// 		break;
-	// 	case 3: 
-	// 		oled_write_P(PSTR("MUSIC\n"), false);
-	// 		break;
-	// }
 
 	// Host Keyboard LED Status
 	led_t led_state = host_keyboard_led_state();
@@ -341,30 +327,10 @@ void td_tab (qk_tap_dance_state_t *state, void *user_data) {
 	unregister_code(KC_TAB);
 }
 
-void td_tild (qk_tap_dance_state_t *state, void *user_data) {
-	int taps = tapState(state);
-
-	switch (taps){
-		case SINGLE_TAP:
-			tap_code(KC_GRV);
-			reset_tap_dance (state);
-			break;
-		case SINGLE_HOLD:
-			tild_held = true;
-			break;
-	}
-}
-
-void td_tild_reset (qk_tap_dance_state_t *state, void *user_data) {
-	tild_held = false;
-}
-
 qk_tap_dance_action_t tap_dance_actions[] = {
 	[TD_TAB] = ACTION_TAP_DANCE_FN(td_tab),
 
 	[TD_PAR] = ACTION_TAP_DANCE_FN(td_parenthesis),
-
-	[TD_TILD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_tild, td_tild_reset),
 
 	// [UKC_SPC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, space_finished, space_reset),
 };
