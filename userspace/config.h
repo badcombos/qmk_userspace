@@ -7,7 +7,11 @@
 #define TAPPING_TERM_PER_KEY
 
 #ifdef AUTO_SHIFT_ENABLE
-    #define AUTO_SHIFT_TIMEOUT 200
+    #define AUTO_SHIFT_TIMEOUT 150
+    
+    // only auto-shift special characters ,< .> /? 
+    #define NO_AUTO_SHIFT_NUMERIC  
+    #define NO_AUTO_SHIFT_ALPHA
 #endif
 
 //https://github.com/qmk/qmk_firmware/blob/master/docs/feature_rgblight.md#configuration
@@ -18,6 +22,11 @@
     #define COMBO_ONLY_FROM_LAYER 0  //base layer
     #undef COMBO_TERM
     #define COMBO_TERM 50
+#endif
+
+#ifdef DIS_OXYMORON
+    #define ENCODERS_PAD_A { D1 }
+    #define ENCODERS_PAD_B { D0 }
 #endif
 
 #ifdef IS_MINI36

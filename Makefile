@@ -1,10 +1,12 @@
 USER = badcombos
 USER_PATH = users/$(USER)/keyboards
-KEYBOARDS = planck mini36
+KEYBOARDS = planck mini36 oxymoron
 
 # keyboard names 
 NAME_planck = planck
 NAME_mini36 = mini36
+NAME_oxymoron = oxymoron
+
 
 all: $(KEYBOARDS)
 
@@ -21,7 +23,7 @@ $(KEYBOARDS):
 	# since qmk's makefile does not support changing the output dirctory of qmk compile
 	rm -rf .build/ # clear old firmwares
 	mkdir .build/
-	mv qmk_firmware/.build/*.{bin,uf2} $(shell pwd)/.build > /dev/null || true
+	mv qmk_firmware/.build/*.{bin,uf2,hex} $(shell pwd)/.build > /dev/null || true
 
 clean:
 	rm -rf ./qmk_firmware/

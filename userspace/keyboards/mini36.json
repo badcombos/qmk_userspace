@@ -7,7 +7,6 @@
 	"layers": [
 		[ "BASE" ],
 		[ "GAME" ],
-		[ "COLE" ],
 		[ "NAV" ],
 		[ "NUM" ],
 		[ "ADJ" ]

@@ -15,35 +15,34 @@
 const key_override_t override_key_delete = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
 
 //alt nums for function keys
-const key_override_t override_key_1 = ko_make_basic(MOD_MASK_ALT, KC_1, KC_F1);
-const key_override_t override_key_2 = ko_make_basic(MOD_MASK_ALT, KC_2, KC_F2);
-const key_override_t override_key_3 = ko_make_basic(MOD_MASK_ALT, KC_3, KC_F3);
-const key_override_t override_key_4 = ko_make_basic(MOD_MASK_ALT, KC_4, KC_F4);
-const key_override_t override_key_5 = ko_make_basic(MOD_MASK_ALT, KC_5, KC_F5);
-const key_override_t override_key_6 = ko_make_basic(MOD_MASK_ALT, KC_6, KC_F6);
-const key_override_t override_key_7 = ko_make_basic(MOD_MASK_ALT, KC_7, KC_F7);
-const key_override_t override_key_8 = ko_make_basic(MOD_MASK_ALT, KC_8, KC_F8);
-const key_override_t override_key_9 = ko_make_basic(MOD_MASK_ALT, KC_9, KC_F9);
+// const key_override_t override_key_1 = ko_make_basic(MOD_MASK_ALT, KC_1, KC_F1);
+// const key_override_t override_key_2 = ko_make_basic(MOD_MASK_ALT, KC_2, KC_F2);
+// const key_override_t override_key_3 = ko_make_basic(MOD_MASK_ALT, KC_3, KC_F3);
+// const key_override_t override_key_4 = ko_make_basic(MOD_MASK_ALT, KC_4, KC_F4);
+// const key_override_t override_key_5 = ko_make_basic(MOD_MASK_ALT, KC_5, KC_F5);
+// const key_override_t override_key_6 = ko_make_basic(MOD_MASK_ALT, KC_6, KC_F6);
+// const key_override_t override_key_7 = ko_make_basic(MOD_MASK_ALT, KC_7, KC_F7);
+// const key_override_t override_key_8 = ko_make_basic(MOD_MASK_ALT, KC_8, KC_F8);
+// const key_override_t override_key_9 = ko_make_basic(MOD_MASK_ALT, KC_9, KC_F9);
 
 const key_override_t **key_overrides = (const key_override_t *[]){
 	&override_key_delete,
 	//
-	&override_key_1,
-	&override_key_2,
-	&override_key_3,
-	&override_key_4,
-	&override_key_5,
-	&override_key_6,
-	&override_key_7,
-	&override_key_8,
-	&override_key_9,
+	// &override_key_1,
+	// &override_key_2,
+	// &override_key_3,
+	// &override_key_4,
+	// &override_key_5,
+	// &override_key_6,
+	// &override_key_7,
+	// &override_key_8,
+	// &override_key_9,
 	NULL // Null terminate the array of overrides!
 };
 
 //custom overrides
 unsigned char nav_state = 0;
 const unsigned char nav_state_max = 1;
-bool tild_held = false; 
 
 // returns true if key is overrided
 // returns false if no processing takes place
