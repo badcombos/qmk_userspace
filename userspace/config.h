@@ -6,7 +6,11 @@
 #define TAPPING_TERM 150
 #define TAPPING_TERM_PER_KEY
 
+#define LEADER_PER_KEY_TIMING
+#define LEADER_TIMEOUT 500
+
 #ifdef AUTO_SHIFT_ENABLE
+    #undef AUTO_SHIFT_TIMEOUT
     #define AUTO_SHIFT_TIMEOUT 150
     
     // only auto-shift special characters ,< .> /? 

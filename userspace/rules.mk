@@ -1,14 +1,20 @@
 SRC += badcombos.c
 
+CONSOLE_ENABLE = no
+COMMAND_ENABLE = no
+
 KEY_OVERRIDE_ENABLE = yes
 TAP_DANCE_ENABLE = yes
 AUTO_SHIFT_ENABLE = yes
-
-CONSOLE_ENABLE = no
-BOOTMAGIC_ENABLE = yes
+LEADER_ENABLE = yes
+CAPS_WORD_ENABLE = yes
 
 COMBO_ENABLE = yes
 VPATH += keyboards/gboards
+
+SRC += features/casemodes.c
+SRC += features/oled.c
+# SRC += features/tapdance.c
 
 ifeq ($(strip $(KEYBOARD)), $(filter $(KEYBOARD), planck/rev6_drop))
 	OPT_DEFS += -DIS_PLANCK

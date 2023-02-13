@@ -1,0 +1,14 @@
+{
+	"author": "",
+	"documentation": "Wrapper based keymap",
+	"keyboard": "badcombos/willy",
+	"keymap": "badcombos",
+	"layout": "LAYOUT_willy_wrapper",
+	"layers": [
+		[ "BASE" ],
+		[ "NUM" ],
+		[ "NAV" ]
+	],
+	"notes": "",
+	"version": 1
+}

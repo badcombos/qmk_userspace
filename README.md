@@ -18,3 +18,20 @@ Compiles specific keyboard
 Compiles all keyboards
 3. `make clean`
 Removes qmk submodules and `./build` folder
+
+# Features
+## Andrewjrae's Case Modes
+Uses [@Andrewjrae](https://github.com/andrewjrae)'s extention of Caps Word (called X-Case) for easy snake case and directory case
+[Link to his X-Case Documentation](https://github.com/andrewjrae/kyria-keymap/tree/e3ad77dc4d48b8e6a842c9136c76c1021ab5976b#x-case)
+[Link to his X-Case Files](https://github.com/andrewjrae/kyria-keymap/tree/master/features)
+
+
+# linkers folder
+contains raw qmk files for keyboards that are not mergered with qmk master or private qmk repos (that i could not find)
+this is needed to compile the firmwares for these boards
+
+| Keyboard             | Keyboard Website                                                  | Firmware Location                                                    | Notes                                                                                                                                                                                                                           |
+|----------------------|-------------------------------------------------------------------|----------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| rainkeebs/orymoron   | [Oxymoron Website](https://www.cbkbd.com/product/oxymoron-extras) | files found in discord                                               |                                                                                                                                                                                                                                 |
+| rainkeebs/orthomoron | [Oxymoron Website](https://www.cbkbd.com/product/oxymoron-extras) | files found in discord                                               |                                                                                                                                                                                                                                 |
+| tsquash/willy        | [Willy Website](https://www.squashkb.com/product/gb-willy)        | https://github.com/Tsquash/vial-qmk/tree/free_willy/keyboards/willy  | Personally modified to be up to date with QMK 26 NOV 2022 Update <br /> See here: https://github.com/qmk/qmk_firmware/blob/master/docs/ChangeLog/20221126.md#data-driven-usb-ids-refactoring-18152-idusb-ids-refactoringfor more info  |

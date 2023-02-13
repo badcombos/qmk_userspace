@@ -1,15 +1,13 @@
 {
     "author": "",
     "documentation": "Wrapper based keymap",
-    "keyboard": "rainkeebs/oxymoron",
+    "keyboard": "badcombos/oxymoron",
     "keymap": "badcombos",
     "layout": "LAYOUT_oxymoron_wrapper",
     "layers": [
-        [ "CONV_OXY_STAGGER(BASE)" ],
-        [ "CONV_OXY_STAGGER(GAME)" ],
-        [ "CONV_OXY_STAGGER(NAV)" ],
-        [ "CONV_OXY_STAGGER(NUM)" ],
-        [ "CONV_OXY_STAGGER(ADJ)" ]
+        [ "BASE" ],
+        [ "NAV" ],
+        [ "NUM" ]
     ],
     "notes": "",
     "version": 1

@@ -3,6 +3,9 @@
 #include "config.h"
 #include "layout.h"
 #include "g/keymap_combo.h"
+#include "features/casemodes.h"
+
+static bool STATUS_ARROWS = false;
 
 /*
  * -----------------------------------------------------------------------------------
@@ -10,39 +13,38 @@
  *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_key_overrides.md
  * -----------------------------------------------------------------------------------
 */
-
 //shift backspace
 const key_override_t override_key_delete = ko_make_basic(MOD_MASK_SHIFT, KC_BSPC, KC_DEL);
 
-//alt nums for function keys
-// const key_override_t override_key_1 = ko_make_basic(MOD_MASK_ALT, KC_1, KC_F1);
-// const key_override_t override_key_2 = ko_make_basic(MOD_MASK_ALT, KC_2, KC_F2);
-// const key_override_t override_key_3 = ko_make_basic(MOD_MASK_ALT, KC_3, KC_F3);
-// const key_override_t override_key_4 = ko_make_basic(MOD_MASK_ALT, KC_4, KC_F4);
-// const key_override_t override_key_5 = ko_make_basic(MOD_MASK_ALT, KC_5, KC_F5);
-// const key_override_t override_key_6 = ko_make_basic(MOD_MASK_ALT, KC_6, KC_F6);
-// const key_override_t override_key_7 = ko_make_basic(MOD_MASK_ALT, KC_7, KC_F7);
-// const key_override_t override_key_8 = ko_make_basic(MOD_MASK_ALT, KC_8, KC_F8);
-// const key_override_t override_key_9 = ko_make_basic(MOD_MASK_ALT, KC_9, KC_F9);
-
 const key_override_t **key_overrides = (const key_override_t *[]){
 	&override_key_delete,
-	//
-	// &override_key_1,
-	// &override_key_2,
-	// &override_key_3,
-	// &override_key_4,
-	// &override_key_5,
-	// &override_key_6,
-	// &override_key_7,
-	// &override_key_8,
-	// &override_key_9,
 	NULL // Null terminate the array of overrides!
 };
 
-//custom overrides
-unsigned char nav_state = 0;
-const unsigned char nav_state_max = 1;
+void numlock_on(void) {
+	led_t led_state = host_keyboard_led_state();
+	bool b = led_state.num_lock;
+	if (!b) {
+		register_code(KC_NUM_LOCK);
+		unregister_code(KC_NUM_LOCK);
+	}
+}
+void keyboard_post_init_user() {
+  numlock_on();
+  STATUS_ARROWS = false;
+}
+
+// https://github.com/qmk/qmk_firmware/blob/master/docs/tap_hold.md
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+	switch (keycode) {
+		case MOD_SPC:
+			return 400;
+		// case HRM_A:
+		// 	return 400;
+		default:
+			return TAPPING_TERM;
+	}
+}
 
 // returns true if key is overrided
 // returns false if no processing takes place
@@ -58,18 +60,6 @@ bool override_helper(bool b, keyrecord_t *record, uint16_t keycode){
 	return false;
 }
 
-// https://github.com/qmk/qmk_firmware/blob/master/docs/tap_hold.md
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-	switch (keycode) {
-		case MOD_SPC:
-			return 400;
-		case HRM_A:
-			return 400;
-		default:
-			return TAPPING_TERM;
-	}
-}
-
 /*
  * -----------------------------------------------------------------------------------
  *  Process User Record
@@ -81,93 +71,85 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 */
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
-//for testing
-#ifdef CONSOLE_ENABLE
-xprintf("KL: row: %u, column: %u, pressed: %u\n", record->event.key.col, record->event.key.row, record->event.pressed);
-#endif
-		switch (keycode) { 
-		// case KC_E:
-		// 	return !(override_helper(nav_state == 1, record, KC_UP) || 
-		// 			 override_helper(nav_state == 2, record, KC_PAGE_UP) ||
-		// 			 override_helper(nav_state == 3, record, KC_VOLU));
-		// case KC_S:
-		// 	return !(override_helper(nav_state == 1, record, KC_LEFT) || 
-		// 			 override_helper(nav_state == 2, record, KC_HOME) ||
-		// 			 override_helper(nav_state == 3, record, KC_MPRV));
-		// case KC_D:
-		// 	return !(override_helper(nav_state == 1, record, KC_DOWN) || 
-		// 			 override_helper(nav_state == 2, record, KC_PAGE_DOWN) ||
-		// 			 override_helper(nav_state == 3, record, KC_VOLD));
-		// case KC_F:
-		// 	return !(override_helper(nav_state == 1, record, KC_RIGHT) || 
-		// 			 override_helper(nav_state == 2, record, KC_END) ||
-		// 			 override_helper(nav_state == 3, record, KC_MNXT));
-		
-		// case MOD_SPC: //not KC_SPC because using taphold function on space
-		// 	return !(override_helper(nav_state == 3, record, KC_MPLY));
-		// 	//KC_HYPR ,KC_MEH  ,KC_GC   ,		  KC_DEL  ,_______ , KC_ENT
+	//for testing
+	#ifdef CONSOLE_ENABLE
+	xprintf("KL: row: %u, column: %u, pressed: %u\n", record->event.key.col, record->event.key.row, record->event.pressed);
+	#endif
 
-		case C_TOGGLE:
+	// Process case modes
+	if (!process_case_modes(keycode, record)) {
+		return false;
+	}
+
+	static bool STATUS_RSHIFT = false; 
+	static bool STATUS_RI_CASE = false; 
+
+	if (STATUS_RI_CASE) {
+		if (record->event.pressed) {
+			switch (keycode) {
+				case KC_A ... KC_Z:
+					SEND_STRING(":regional_indicator_");
+					tap_code16(keycode);
+					SEND_STRING(": ");
+					return false;
+				case MOD_SPC:
+					SEND_STRING("    ");
+					return false;
+				default: 
+					STATUS_RI_CASE = false;
+					return true;
+			}
+		}
+	}
+
+	switch (keycode) { 
+		case C_CMETA: 
+			STATUS_ARROWS = record->event.pressed;
+			break;
+		case KC_RSFT: 
+			STATUS_RSHIFT = record->event.pressed;
+			break;
+
+		case KC_SLSH:
+			if (!(get_mods() & MOD_BIT(KC_LSFT))) // if lshift is held, them dont unregister rshift
+				unregister_code(KC_RSFT);
+			return !(override_helper(STATUS_RSHIFT, record, KC_BACKSLASH));
+		case KC_SCLN:
+			if (!(get_mods() & MOD_BIT(KC_LSFT))) // if lshift is held, them dont unregister rshift
+				unregister_code(KC_RSFT);
+			return !(override_helper(STATUS_RSHIFT, record, KC_QUOT));
+
+		case KC_E:
+			return !(override_helper(STATUS_ARROWS, record, KC_UP));
+		case KC_S:
+			return !(override_helper(STATUS_ARROWS, record, KC_LEFT));
+		case KC_D:
+			return !(override_helper(STATUS_ARROWS, record, KC_DOWN));
+		case KC_F:
+			return !(override_helper(STATUS_ARROWS, record, KC_RIGHT));
+
+		case C_SNAKECASE:
 			if (record->event.pressed) {
-				nav_state = (nav_state < nav_state_max)? nav_state+1: 0;
+				toggle_caps_word();
+				enable_xcase_with(KC_UNDS);
+			}
+			return false;
+		case C_NAVCASE:
+			if (record->event.pressed) {
+				enable_xcase_with(KC_SLSH);
+			}
+			return false;
+		case C_RI_CASE:
+			if (record->event.pressed) {
+				STATUS_RI_CASE ^= 1; //xor boolean flip
 				return false;
 			}
 
-		}//end switch
+
+	}//end switch
 	
 	return true;
 }
-
-/*
- * -----------------------------------------------------------------------------------
- *  Tri Layout Toggle
- *  https://github.com/qmk/qmk_firmware/blob/master/docs/ref_functions.md
- * -----------------------------------------------------------------------------------
-*/
-layer_state_t layer_state_set_user(layer_state_t state) {
-	state = update_tri_layer_state(state, _NAV, _NUM, _ADJ);
-
-	#ifdef IS_PLANCK
-	/*
-	 * -----------------------------------------------------------------------------------
-	 *  Planck RGB UnderGlow
-	 *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_rgblight.md
-	 * -----------------------------------------------------------------------------------
-	*/
-		// bool is_qwerty = true;
-
-		switch (get_highest_layer(state)) {
-			case _NAV:
-				rgblight_setrgb(RGB_RED);
-				break;
-			case _NUM:
-				rgblight_setrgb(RGB_CYAN);
-				break;
-			case _ADJ:
-				rgblight_setrgb(RGB_PURPLE);
-				break;
-			default: //for any other layers, or the default layer
-				rgblight_setrgb(RGB_GREEN);
-				// is_qwerty ? rgblight_setrgb(RGB_GREEN) : rgblight_setrgb(RGB_BLUE) ;
-				break;
-		}
-	#endif 
-
-	return state;
-}
-
-/*
- * -----------------------------------------------------------------------------------
- *  fixes rgb being a different color on startup because it uses the last 'saved color'
- *  https://docs.qmk.fm/#/custom_quantum_functions?id=keyboard-post-initialization-code
- * -----------------------------------------------------------------------------------
-*/
-#ifdef IS_PLANCK
-void keyboard_post_init_user(void) {
-	rgblight_enable_noeeprom(); // enables Rgb, without saving settings
-	rgblight_sethsv_noeeprom(HSV_GREEN); // sets the color to teal/cyan without saving
-}
-#endif
 
 /*
  * -----------------------------------------------------------------------------------
@@ -182,49 +164,54 @@ bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode
 	return false;
 }
 
-#ifdef OLED_ENABLE
-bool oled_task_user(void) {
-	
-	// Host Keyboard Layer Status
-	oled_write_P(PSTR("Layer: "), false);
+// /*
+//  * -----------------------------------------------------------------------------------
+//  *  Caps Word
+//  *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_caps_word.md
+//  * -----------------------------------------------------------------------------------
+// */
+// bool caps_word_press_user(uint16_t keycode) {
+// 	switch (keycode) {
+// 		// Keycodes that continue Caps Word, with shift applied.
+// 		case KC_A ... KC_Z:
+// 		case KC_MINS:
+// 			add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key.
+// 			return true;
 
-	/*
-	 * -----------------------------------------------------------------------------------
-	 *  trigger on layer change AND default layer change from:
-	 *  https://www.reddit.com/r/olkb/comments/o5924u/comment/h2pq9rd/?utm_source=share&utm_medium=web2x&context=3
-	 * -----------------------------------------------------------------------------------
-	*/
-	switch (get_highest_layer(layer_state|default_layer_state)) {
-		case _BASE:
-			oled_write_P(PSTR("BASE-QWERTY\n"), false);
-			break;
-		case _GAME:
-			oled_write_P(PSTR("BASE-GAMING\n"), false);
-			break;
-		case _NAV:
-			oled_write_P(PSTR("NAVIGATION\n"), false);
-			break;
-		case _NUM:
-			oled_write_P(PSTR("NUMBERS\n"), false);
-			break;
-		case _ADJ:
-			oled_write_P(PSTR("SETTINGS\n"), false);
-			break;            
-		default:
-			// Or use the write_ln shortcut over adding '\n' to the end of your string
-			oled_write_ln_P(PSTR("Undefined"), false);
+// 		// Keycodes that continue Caps Word, without shifting.
+// 		case KC_1 ... KC_0:
+// 		case MOD_SPC:
+// 		case KC_BSPC:
+// 		case KC_DEL:
+// 		case KC_UNDS:
+// 			return true;
+
+// 		default:
+// 			return false;  // Deactivate Caps Word.
+// 	}
+// }
+
+/*
+ * -----------------------------------------------------------------------------------
+ *  Leader Key
+ *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_leader_key.md
+ * -----------------------------------------------------------------------------------
+*/
+LEADER_EXTERNS();
+
+void matrix_scan_user(void) {
+	LEADER_DICTIONARY() {
+		leading = false;
+		leader_end();
+
+		SEQ_FOUR_KEYS(KC_B, KC_O, KC_O, KC_T) {
+			tap_code16(QK_BOOT);
+		}
+		SEQ_ONE_KEY(KC_S) {
+			SEND_STRING(SS_LCTL(SS_LGUI(SS_TAP(X_LEFT))));
+		}
 	}
-
-	// Host Keyboard LED Status
-	led_t led_state = host_keyboard_led_state();
-	oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
-	oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
-	oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
-	
-	return false;
-	
 }
-#endif //oled enable ifdef
 
 /*
  * -----------------------------------------------------------------------------------
@@ -232,11 +219,12 @@ bool oled_task_user(void) {
  *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_tap_dance.md
  * -----------------------------------------------------------------------------------
 */
-
+ 
 //ALT_TAB definitions
 bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;
 
+//td space definitions 
 int tapState_space = 0;
 
 enum {
@@ -326,10 +314,34 @@ void td_tab (qk_tap_dance_state_t *state, void *user_data) {
 	unregister_code(KC_TAB);
 }
 
+void p_finished (qk_tap_dance_state_t *state, void *user_data) {
+	int taps = tapState(state);
+
+	switch (taps){
+		case SINGLE_TAP:
+			tap_code(KC_P);
+			reset_tap_dance (state);
+			break;
+		case SINGLE_HOLD:
+			STATUS_ARROWS = true;
+			register_mods(MOD_BIT(KC_LCTL));
+			register_mods(MOD_BIT(KC_LGUI));
+			break;
+	}
+}
+
+void p_reset (qk_tap_dance_state_t *state, void *user_data) {
+	unregister_mods(MOD_BIT(KC_LCTL));
+	unregister_mods(MOD_BIT(KC_LGUI));
+	STATUS_ARROWS = false;
+}
+
 qk_tap_dance_action_t tap_dance_actions[] = {
 	[TD_TAB] = ACTION_TAP_DANCE_FN(td_tab),
 
 	[TD_PAR] = ACTION_TAP_DANCE_FN(td_parenthesis),
 
 	// [UKC_SPC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, space_finished, space_reset),
+
+	[TD_P] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, p_finished, p_reset),
 };
