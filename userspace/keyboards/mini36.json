@@ -6,10 +6,8 @@
 	"layout": "LAYOUT_mini36_wrapper",
 	"layers": [
 		[ "BASE" ],
-		[ "GAME" ],
 		[ "NAV" ],
-		[ "NUM" ],
-		[ "ADJ" ]
+		[ "NUM" ]
 	],
 	"notes": "",
 	"version": 1

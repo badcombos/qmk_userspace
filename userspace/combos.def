@@ -1,19 +1,25 @@
-COMB(tab_combo,			KC_TAB,			KC_R, KC_F)
-COMB(stab_combo,		S(KC_TAB),		KC_E, KC_D)
 
+COMB(esc_combo,			KC_ESC,			KC_W, KC_E)
 COMB(ent_combo,			KC_ENT,			KC_D, KC_F)
 
-COMB(mins_combo,		KC_MINS,		KC_W, KC_E)
-COMB(eql_combo,			KC_EQL,			KC_E, KC_R)
+COMB(tab_combo,			KC_TAB,			KC_R, KC_F)
+
+COMB(lead_combo,		KC_LEAD,		KC_Q, MOD_P)
+
 
 COMB(lparent_combo,		KC_LPRN,		KC_J, KC_U)
 COMB(rparent_combo,		KC_RPRN,		KC_K, KC_I)
 
-COMB(lcbrace_combo,		KC_LCBR,		KC_J, KC_M)
-COMB(rcbrace_combo,		KC_RCBR,		KC_K, KC_COMM)
+COMB(lbrace_combo,		KC_LBRC,		KC_J, KC_M)
+COMB(rbrace_combo,		KC_RBRC,		KC_K, KC_COMM)
+
+
+
+COMB(quote_combo,		KC_QUOT,		KC_L, KC_SCLN)
+COMB(backslash_combo,	KC_BSLS,		KC_DOT, L_SLASH)
 
 
 
 COMB(snake_case_combo,	C_SNAKECASE,	KC_F, KC_J)
 COMB(snake_nav_combo,	C_NAVCASE,		KC_F, KC_J, KC_K)
-COMB(ri_case_combo,		C_RI_CASE,		KC_O, KC_P)
+COMB(ri_case_combo,		C_RI_CASE,		KC_R, KC_U)

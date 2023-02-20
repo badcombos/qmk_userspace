@@ -80,8 +80,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	if (!process_case_modes(keycode, record)) {
 		return false;
 	}
-
-	static bool STATUS_RSHIFT = false; 
+ 
 	static bool STATUS_RI_CASE = false; 
 
 	if (STATUS_RI_CASE) {
@@ -106,18 +105,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		case C_CMETA: 
 			STATUS_ARROWS = record->event.pressed;
 			break;
-		case KC_RSFT: 
-			STATUS_RSHIFT = record->event.pressed;
-			break;
 
-		case KC_SLSH:
-			if (!(get_mods() & MOD_BIT(KC_LSFT))) // if lshift is held, them dont unregister rshift
-				unregister_code(KC_RSFT);
-			return !(override_helper(STATUS_RSHIFT, record, KC_BACKSLASH));
-		case KC_SCLN:
-			if (!(get_mods() & MOD_BIT(KC_LSFT))) // if lshift is held, them dont unregister rshift
-				unregister_code(KC_RSFT);
-			return !(override_helper(STATUS_RSHIFT, record, KC_QUOT));
+		case MOD_P: 
+			STATUS_ARROWS = record->event.pressed;
+			break;
 
 		case KC_E:
 			return !(override_helper(STATUS_ARROWS, record, KC_UP));
@@ -204,12 +195,23 @@ void matrix_scan_user(void) {
 		leading = false;
 		leader_end();
 
+		SEQ_TWO_KEYS(KC_S, KC_S) { 
+			SEND_STRING(SS_LGUI(SS_LSFT("s"))); //screenshot
+		}
+
 		SEQ_FOUR_KEYS(KC_B, KC_O, KC_O, KC_T) {
-			tap_code16(QK_BOOT);
+			reset_keyboard(); //enter bootloader
 		}
-		SEQ_ONE_KEY(KC_S) {
-			SEND_STRING(SS_LCTL(SS_LGUI(SS_TAP(X_LEFT))));
+
+		SEQ_FIVE_KEYS(KC_C, KC_L, KC_E, KC_A, KC_R) {
+			eeconfig_init(); //clear eeprom
 		}
+
+		//memes
+		SEQ_FOUR_KEYS(KC_P, KC_I, KC_P, KC_E) {
+			SEND_STRING("https://tenor.com/view/bomb-bruh-mailbox-jump-jumping-gif-18537429");
+		}
+
 	}
 }
 
@@ -249,37 +251,6 @@ int tapState (qk_tap_dance_state_t *state) {
 	}
 }
 
-
-void space_finished (qk_tap_dance_state_t *state, void *user_data) {
-	tapState_space = tapState(state);
-
-	switch (tapState_space) {
-		case SINGLE_TAP: 
-			tap_code(KC_SPC);
-			reset_tap_dance (state);
-			break;
-		case SINGLE_HOLD: 
-			register_code(KC_LCTL); 
-			break;
-		case DOUBLE_TAP: 
-			tap_code(KC_TAB);
-			break;
-	} 
-}
-
-void space_reset (qk_tap_dance_state_t *state, void *user_data) {
-	switch (tapState_space) {
-		case SINGLE_TAP: 
-			break;
-		case SINGLE_HOLD: 
-			unregister_code(KC_LCTL); 
-			break;
-		case DOUBLE_TAP: 
-			break;
-		}
-	tapState_space = 0;
-}
-
 void td_parenthesis (qk_tap_dance_state_t *state, void *user_data) {
 	int taps = tapState(state);
 
@@ -314,34 +285,8 @@ void td_tab (qk_tap_dance_state_t *state, void *user_data) {
 	unregister_code(KC_TAB);
 }
 
-void p_finished (qk_tap_dance_state_t *state, void *user_data) {
-	int taps = tapState(state);
-
-	switch (taps){
-		case SINGLE_TAP:
-			tap_code(KC_P);
-			reset_tap_dance (state);
-			break;
-		case SINGLE_HOLD:
-			STATUS_ARROWS = true;
-			register_mods(MOD_BIT(KC_LCTL));
-			register_mods(MOD_BIT(KC_LGUI));
-			break;
-	}
-}
-
-void p_reset (qk_tap_dance_state_t *state, void *user_data) {
-	unregister_mods(MOD_BIT(KC_LCTL));
-	unregister_mods(MOD_BIT(KC_LGUI));
-	STATUS_ARROWS = false;
-}
-
 qk_tap_dance_action_t tap_dance_actions[] = {
 	[TD_TAB] = ACTION_TAP_DANCE_FN(td_tab),
 
 	[TD_PAR] = ACTION_TAP_DANCE_FN(td_parenthesis),
-
-	// [UKC_SPC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, space_finished, space_reset),
-
-	[TD_P] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, p_finished, p_reset),
 };
