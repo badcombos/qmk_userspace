@@ -5,9 +5,9 @@
     "keymap": "badcombos",
     "layout": "LAYOUT_oxymoron_wrapper",
     "layers": [
-        [ "BASE" ],
-        [ "NAV" ],
-        [ "NUM" ]
+        [ "CONV_OXYMORON(BASE)" ],
+        [ "CONV_OXYMORON(NAV)" ],
+        [ "CONV_OXYMORON(NUM)" ]
     ],
     "notes": "",
     "version": 1

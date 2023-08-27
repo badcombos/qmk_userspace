@@ -1,0 +1,14 @@
+{
+    "author": "",
+    "documentation": "Wrapper based keymap",
+    "keyboard": "badcombos/orthomoron",
+    "keymap": "badcombos",
+    "layout": "LAYOUT_orthomoron_wrapper",
+    "layers": [
+        [ "CONV_ORTHOMORON(BASE)" ],
+        [ "CONV_ORTHOMORON(NAV)" ],
+        [ "CONV_ORTHOMORON(NUM)" ]
+    ],
+    "notes": "",
+    "version": 1
+}

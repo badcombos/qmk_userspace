@@ -1,11 +1,12 @@
 USER = badcombos
 USER_PATH = users/$(USER)/keyboards
-KEYBOARDS = planck mini36 oxymoron willy
+KEYBOARDS = planck mini36 oxymoron orthomoron willy
 
 # keyboard names 
 NAME_planck = planck
 NAME_mini36 = mini36
 NAME_oxymoron = oxymoron
+NAME_orthomoron = orthomoron
 NAME_willy = willy
 
 
@@ -44,4 +45,4 @@ links:
 	rm -rf ./qmk_firmware/keyboards/badcombos
 
 	# copying files into folder under my own folder in qmk_firmware/keyboards/ in order to prevent naming collisions 
-	cp -a $(shell pwd)/linkers/. qmk_firmware/keyboards/badcombos
+	cp -a $(shell pwd)/linkers/.qmk_firmware/keyboards/badcombos

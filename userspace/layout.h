@@ -3,18 +3,30 @@
 /* 
  * custom keycodes
  * -----------------------------------------------------------------------------------
- * Because the use of SAFE_RANGE to enumerate custom keycodes is not supported inside config.h, we manually count up from a high number
+ * Because the use of SAFE_RANGE to enumerate custom keycodes is not supported 
+ * inside config.h, we manually count up from a high number
  * read more about the issue here: https://filterpaper.github.io/qmk/userspace#limitations 
  * -----------------------------------------------------------------------------------
  * keycode list in hex found at the link below
  * https://github.com/qmk/qmk_firmware/blob/master/quantum/keycodes.h
+ * -----------------------------------------------------------------------------------
  */
-#define C_SAFE_RANGE 		0xff00 //qmk SAFE_RANGE = 0x7E00
-//0x8000 - 0xFFFF are reserved for unicode, dont use if using unicode
-#define C_TOGGLE_MACROS 	0xff01
-#define C_SNAKECASE  		0xff02
-#define C_NAVCASE 			0xff04
-#define C_RI_CASE	 		0xff05
+#define C_SAFE_RANGE 		0x7E00 //qmk SAFE_RANGE = 0x7E00
+//0x8000 - 0xFFFF are reserved for unicode
+#define C_TOGGLE_MACROS 	0x7E01
+#define C_SNAKECASE  		0x7E02
+#define C_NAVCASE 			0x7E04
+#define C_RI_CASE	 		0x7E05
+
+//define 4 char aliases to make keyboard ascii charts more pretty
+//case is important to not cause naming conflicts within QMK source
+#define XXXX 				KC_NO
+#define Lctl 				KC_LCTL
+#define Rctl 				KC_RCTL
+#define Lgui 				KC_LGUI
+#define Rgui 				KC_RGUI
+#define Lalt 				KC_LALT
+#define Ralt 				KC_RALT
 
 // Tap Dance declarations
 #define TD_TAB 				0
@@ -26,8 +38,8 @@
 #define _NUM 				2
 
 // Layer keys
-#define L_NAV           	MO(_NAV)
-#define L_NUM           	MO(_NUM)
+#define L_NAV				MO(_NAV)
+#define L_NUM				MO(_NUM)
 
 #define L_SLASH           	LT(_NUM, KC_SLSH)
 
@@ -53,13 +65,11 @@
 
 //` ~ ! @ # $ % ^ & * ( ) - _ = + [ ] { } \ | ; : ' " , < . > / ?
 
-// COMB(lbrace_combo,		KC_LBRC,		KC_M, KC_COMM)
-// COMB(rbrace_combo,		KC_RBRC,		KC_COMM, KC_DOT)
-
 // Layout Aliases
 #define LAYOUT_willy_wrapper(...) LAYOUT(__VA_ARGS__)
 
 #define LAYOUT_oxymoron_wrapper(...) LAYOUT(__VA_ARGS__)
+#define LAYOUT_orthomoron_wrapper(...) LAYOUT(__VA_ARGS__)
 
 #define LAYOUT_mini36_wrapper(...) LAYOUT_split_3x5_3(__VA_ARGS__)
 
@@ -92,9 +102,9 @@
 /* ┌────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┬────────┐ */ \
 	XXXXXXX ,KC_HOME , KC_UP  , KC_END ,KC_PGUP ,XXXXXXX ,KC_MPLY ,KC_VOLU ,XXXXXXX ,XXXXXXX ,    \
 /* ├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤ */ \
-	KC_GRAVE,KC_LEFT ,KC_DOWN ,KC_RIGHT,KC_PGDN ,XXXXXXX ,KC_MPRV ,KC_VOLD ,KC_MNXT ,XXXXXXX ,    \
+	XXXXXXX ,KC_LEFT ,KC_DOWN ,KC_RIGHT,KC_PGDN ,XXXXXXX ,KC_MPRV ,KC_VOLD ,KC_MNXT ,XXXXXXX ,    \
 /* ├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤ */ \
-	C(KC_Z) ,C(KC_X) ,C(KC_C) ,C(KC_V) ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,    \
+	XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,    \
 /* ├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤ */ \
 	                  _______ ,_______ ,_______ ,_______ ,_______ ,_______                        \
 /*                   └────────┴─────────────────┴─────────────────┴────────┘                   */ 
@@ -115,12 +125,36 @@
 /* ┌───────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬───┬───────┐ */ \
 	KC_ESC ,l01 ,l02 ,l03 ,l04 ,l05 ,r01 ,r02 ,r03 ,r04 ,r05,KC_BSPC,    \
 /* ├───────┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬───┴┬──┴┐      | */ \
-	KC_TAB  ,l06 ,l07 ,l08 ,l09 ,l10 ,r06 ,r07 ,r08 ,r09 ,r10, KC_NO,    \
+	KC_TAB  ,l06 ,l07 ,l08 ,l09 ,l10 ,r06 ,r07 ,r08 ,r09 ,r10, XXXX ,    \
 /* ├──────┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬─┴──┬┴──────┤ */ \
 	L_NUM ,l11 ,l12 ,l13 ,l14 ,l15, r11 ,r12 ,r13 ,r14 ,r15 ,KC_RSFT,    \
 /* ├──────┴┬───┴───┬┴────┴────┴────┴────┴────┴────┴─┬──┴────┴┬──────┤ */ \
-	KC_LCTL,KC_LGUI,KC_NO, KC_NO, MOD_SPC, KC_NO    ,L_NAV ,KC_NO, C_CMETA \
+	KC_LCTL,KC_LGUI,XXXX, XXXX, MOD_SPC, XXXX       ,L_NAV,XXXX,C_CMETA  \
 /* └───────┴───────┴────────────────────────────────┴────────┴──────┘  */
+
+// Convert 3x10_6 unibody to oxymoron ortholinear
+#define CONV_ORTHOMORON(k) K36_TO_ORTHOMORON(k)
+#define K36_TO_ORTHOMORON( \
+/* ┌────┬────┬────┬────┬────┬────┬────┬────┬────┬────┐ */ \
+	l01 ,l02 ,l03 ,l04 ,l05 ,r01 ,r02 ,r03 ,r04 ,r05 ,    \
+/* ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤ */ \
+	l06 ,l07 ,l08 ,l09 ,l10 ,r06 ,r07 ,r08 ,r09 ,r10 ,    \
+/* ├────┼────┼────┼────┼────┼────┼────┼────┼────┼────┤ */ \
+	l11 ,l12 ,l13 ,l14 ,l15, r11 ,r12 ,r13 ,r14 ,r15 ,    \
+/* └────┴────┴────┼────┼────┼────┼────┼────┼────┼────┤ */ \
+				   l16 ,l17 ,l18 ,r16 ,r17 , r18          \
+/*				  └────┴────┴────┴────┴────┴────┘      */ \
+) \
+/* ┌───────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬───────┐ */ \
+	KC_ESC ,l01 ,l02 ,l03 ,l04 ,l05 ,r01 ,r02 ,r03 ,r04 ,r05 ,KC_BSPC,    \
+/* ├───────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼───────┤ */ \
+	KC_TAB ,l06 ,l07 ,l08 ,l09 ,l10 ,r06 ,r07 ,r08 ,r09 ,r10 ,KC_ENT ,    \
+/* ├───────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼────┼───────┤ */ \
+	KC_LSFT,l11 ,l12 ,l13 ,l14 ,l15, r11 ,r12 ,r13 ,r14 ,r15 ,KC_RSFT,    \
+/* ├────┬──┴─┬──┴─┬──┴─┬──┴────┴────┴────┴────┴────┴────┴────┴───────┤ */ \
+	Lctl,Lgui,Lalt,XXXX, XXXX,l18,L_NAV, XXXX,r16,L_NUM,Ralt,Rgui,Rctl
+/* └────┴────┴────┴────┴──────────┴────┴─────────┴────┴────┴────┴────┘  */
+
 
 // Convert 3x10_6 unibody to 3x5_3 split
 #define CONV_SPLIT36(k) K36_TO_SPLIT36(k)

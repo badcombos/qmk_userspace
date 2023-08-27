@@ -8,6 +8,7 @@ TAP_DANCE_ENABLE = yes
 AUTO_SHIFT_ENABLE = yes
 LEADER_ENABLE = yes
 CAPS_WORD_ENABLE = yes
+# UNICODEMAP_ENABLE = yes
 
 COMBO_ENABLE = yes
 VPATH += keyboards/gboards
