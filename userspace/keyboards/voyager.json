@@ -1,0 +1,13 @@
+{
+    "author": "",
+    "documentation": "Wrapper based keymap",
+    "keyboard": "badcombos/voyager",
+    "keymap": "badcombos",
+    "layout": "LAYOUT_oxymoron_wrapper",
+    "layers": [
+        [ "BASE" ],
+        [ "NUM" ],
+    ],
+    "notes": "",
+    "version": 1
+}

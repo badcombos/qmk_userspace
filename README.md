@@ -25,6 +25,8 @@ Uses [@Andrewjrae](https://github.com/andrewjrae)'s extention of Caps Word (call
 [Link to his X-Case Documentation](https://github.com/andrewjrae/kyria-keymap/tree/e3ad77dc4d48b8e6a842c9136c76c1021ab5976b#x-case)
 [Link to his X-Case Files](https://github.com/andrewjrae/kyria-keymap/tree/master/features)
 
+## Combos
+
 
 # linkers folder
 contains raw qmk files for keyboards that are not mergered with qmk master or private qmk repos (that i could not find)

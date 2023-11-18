@@ -1,4 +1,3 @@
-SRC += badcombos.c
 
 CONSOLE_ENABLE = no
 COMMAND_ENABLE = no
@@ -11,7 +10,7 @@ CAPS_WORD_ENABLE = yes
 # UNICODEMAP_ENABLE = yes
 
 COMBO_ENABLE = yes
-VPATH += keyboards/gboards
+INTROSPECTION_KEYMAP_C = badcombos.c
 
 SRC += features/casemodes.c
 SRC += features/oled.c

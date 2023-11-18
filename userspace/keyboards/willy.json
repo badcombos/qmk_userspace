@@ -6,8 +6,7 @@
 	"layout": "LAYOUT_willy_wrapper",
 	"layers": [
 		[ "BASE" ],
-		[ "NUM" ],
-		[ "NAV" ]
+		[ "NUM" ]
 	],
 	"notes": "",
 	"version": 1

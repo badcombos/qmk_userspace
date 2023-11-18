@@ -2,39 +2,27 @@
 
 #include "config.h"
 #include "layout.h"
-#include "g/keymap_combo.h"
-#include "features/casemodes.h"
 
-static bool STATUS_ARROWS = false;
+// struct to keep track of which "nav mode" we want
+typedef struct {
+	bool arrows;
+	bool alt_nav;
+	bool volume;
+} nav_mode_struct;
 
-// const uint32_t unicode_map[] PROGMEM = {
-//     0x1F1E6, // 🇦
-//     0x1F1E7, // 🇧
-//     0x1F1E8, // 🇨
-//     0x1F1E9, // 🇩
-//     0x1F1EA, // 🇪
-//     0x1F1EB, // 🇫
-//     0x1F1EC, // 🇬
-//     0x1F1ED, // 🇭
-//     0x1F1EE, // 🇮
-//     0x1F1EF, // 🇯
-//     0x1F1F0, // 🇰
-//     0x1F1F1, // 🇱
-//     0x1F1F2, // 🇲
-//     0x1F1F3, // 🇳
-//     0x1F1F4, // 🇴
-//     0x1F1F5, // 🇵
-//     0x1F1F6, // 🇶
-//     0x1F1F7, // 🇷
-//     0x1F1F8, // 🇸
-//     0x1F1F9, // 🇹
-//     0x1F1FA, // 🇺
-//     0x1F1FB, // 🇻
-//     0x1F1FC, // 🇼
-//     0x1F1FD, // 🇽
-//     0x1F1FE, // 🇾
-//     0x1F1FF, // 🇿
-// };
+static nav_mode_struct nav_mode;
+
+// what keys to replace overridden key with
+struct overrides {
+	uint16_t arrow_key;
+	uint16_t alt_nav_key;
+	uint16_t volume_key;
+};
+
+const static struct overrides UP_OVERRIDE 		= {KC_UP   , KC_PGUP, KC_VOLU };
+const static struct overrides DOWN_OVERRIDE 	= {KC_DOWN , KC_PGDN, KC_VOLD };
+const static struct overrides LEFT_OVERRIDE 	= {KC_LEFT , KC_HOME, KC_MPRV };
+const static struct overrides RIGHT_OVERRIDE 	= {KC_RIGHT, KC_END , KC_MNXT };
 
 /*
  * -----------------------------------------------------------------------------------
@@ -45,29 +33,8 @@ static bool STATUS_ARROWS = false;
 //shift backspace
 const key_override_t override_key_delete = ko_make_basic(MOD_MASK_GUI, KC_BSPC, KC_DEL);
 
-const key_override_t override_key_1 = ko_make_basic(MOD_MASK_CTRL, KC_1, KC_F1);
-const key_override_t override_key_2 = ko_make_basic(MOD_MASK_CTRL, KC_2, KC_F2);
-const key_override_t override_key_3 = ko_make_basic(MOD_MASK_CTRL, KC_3, KC_F3);
-const key_override_t override_key_4 = ko_make_basic(MOD_MASK_CTRL, KC_4, KC_F4);
-const key_override_t override_key_5 = ko_make_basic(MOD_MASK_CTRL, KC_5, KC_F5);
-const key_override_t override_key_6 = ko_make_basic(MOD_MASK_CTRL, KC_6, KC_F6);
-const key_override_t override_key_7 = ko_make_basic(MOD_MASK_CTRL, KC_7, KC_F7);
-const key_override_t override_key_8 = ko_make_basic(MOD_MASK_CTRL, KC_8, KC_F8);
-const key_override_t override_key_9 = ko_make_basic(MOD_MASK_CTRL, KC_9, KC_F9);
-const key_override_t override_key_10 = ko_make_basic(MOD_MASK_CTRL, KC_0, KC_F10);
-
 const key_override_t **key_overrides = (const key_override_t *[]) {
 	&override_key_delete,
-	&override_key_1,
-	&override_key_2,
-	// &override_key_3,
-	// &override_key_4,
-	// &override_key_5,
-	// &override_key_6,
-	// &override_key_7,
-	// &override_key_8,
-	// &override_key_9,
-	// &override_key_10,
 	NULL // Null terminate the array of overrides!
 };
 
@@ -80,14 +47,17 @@ void numlock_on(void) {
 	}
 }
 void keyboard_post_init_user() { // function runs on keyboard startup
-  numlock_on();
-  STATUS_ARROWS = false;
+	numlock_on();
+
+	nav_mode.arrows = false;
+	nav_mode.alt_nav = false;
+	nav_mode.volume = false;
 }
 
 // https://github.com/qmk/qmk_firmware/blob/master/docs/tap_hold.md
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 	switch (keycode) {
-		case MOD_SPC:
+		case C_SPAC:
 			return 400;
 		default:
 			return TAPPING_TERM;
@@ -96,15 +66,29 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 // returns true if key is overrided
 // returns false if no processing takes place
-bool override_helper(bool b, keyrecord_t *record, uint16_t keycode){
-	if (b == true){
-		if (record->event.pressed) {
-			register_code(keycode);
-			return true; 
-		}
-		unregister_code(keycode);
+bool override_helper(keyrecord_t *record, struct overrides override){
+
+	uint16_t keycode = KC_NO;
+
+	if (nav_mode.arrows == true) {
+		keycode = override.arrow_key;
+	}
+	if (nav_mode.alt_nav == true) {
+		keycode = override.alt_nav_key;
+	}
+	if (nav_mode.volume == true) {
+		keycode = override.volume_key;
+	}
+
+	if (keycode == KC_NO){
 		return false;
 	}
+	
+	if (record->event.pressed) {
+		register_code(keycode);
+		return true; 
+	}
+	unregister_code(keycode);
 	return false;
 }
 
@@ -142,48 +126,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		return false;
 	}
  
-	static bool STATUS_RI_CASE = false; 
-
-	// if (STATUS_RI_CASE) {
-	// 	if (record->event.pressed) {
-	// 		switch (keycode) {
-	// 			case KC_A ... KC_Z:
-	// 				// having issues with unicode to no ones suprise 
-	// 				// char c = "🇦🇧🇨🇩🇪🇫🇬🇭🇮🇯🇰🇱🇲🇳🇴🇵🇶🇷🇸🇹🇺🇻🇼🇽🇾🇿"[KC_Z - keycode];
-	// 				// char str[3] = { c, ' ', '\0' };// terminate the string with a null character
-	// 				// send_unicode_string( str );
-
-	// 				SEND_STRING(":regional_indicator_");
-	// 				tap_code16(keycode);
-	// 				SEND_STRING(": ");
-	// 				return false;
-	// 			case MOD_SPC:
-	// 				SEND_STRING("    ");
-	// 				return false;
-	// 			default: 
-	// 				STATUS_RI_CASE = false;
-	// 				return true;
-	// 		}
-	// 	}
-	// }
-
 	switch (keycode) { 
-		case C_CMETA: 
-			STATUS_ARROWS = record->event.pressed;
-			break;
-
-		case MOD_P: 
-			STATUS_ARROWS = record->event.pressed;
-			break;
-
 		case KC_E:
-			return !(override_helper(STATUS_ARROWS, record, KC_UP));
+			return !(override_helper(record, UP_OVERRIDE));
 		case KC_S:
-			return !(override_helper(STATUS_ARROWS, record, KC_LEFT));
+			return !(override_helper(record, LEFT_OVERRIDE));
 		case KC_D:
-			return !(override_helper(STATUS_ARROWS, record, KC_DOWN));
+			return !(override_helper(record, DOWN_OVERRIDE));
 		case KC_F:
-			return !(override_helper(STATUS_ARROWS, record, KC_RIGHT));
+			return !(override_helper(record, RIGHT_OVERRIDE));
 
 		case C_SNAKECASE:
 			if (record->event.pressed) {
@@ -196,11 +147,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				enable_xcase_with(KC_SLSH);
 			}
 			return false;
-		case C_RI_CASE:
-			if (record->event.pressed) {
-				STATUS_RI_CASE ^= 1; //xor boolean flip
-				return false;
-			}
+		// case C_RI_CASE:
+		// 	if (record->event.pressed) {
+		// 		STATUS_RI_CASE ^= 1; //xor boolean flip
+		// 		return false;
+		// 	}
 
 
 	}//end switch
@@ -214,12 +165,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
  *  https://github.com/qmk/qmk_firmware/blob/master/docs/feature_combo.md
  * -----------------------------------------------------------------------------------
 */
+#ifdef CONSOLE_ENABLE
 bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
 	if (layer_state_is(_BASE)) { 
 		return true; 
 	}
 	return false;
 }
+#endif
 
 /*
  * -----------------------------------------------------------------------------------
@@ -237,7 +190,7 @@ bool caps_word_press_user(uint16_t keycode) {
 
 		// Keycodes that continue Caps Word, without shifting.
 		case KC_1 ... KC_0:
-		case MOD_SPC:
+		case C_SPAC:
 		case KC_BSPC:
 		case KC_DEL:
 		case KC_UNDS:
@@ -291,7 +244,7 @@ void leader_end_user(void) {
  * -----------------------------------------------------------------------------------
 */
 
-// #ifdef TAP_DANCE_ENABLE
+#ifdef TAP_DANCE_ENABLE
 
 //ALT_TAB definitions
 bool is_alt_tab_active = false;
@@ -356,10 +309,32 @@ void td_tab (tap_dance_state_t *state, void *user_data) {
 	unregister_code(KC_TAB);
 }
 
-tap_dance_action_t tap_dance_actions[] = {
-	[TD_TAB] = ACTION_TAP_DANCE_FN(td_tab),
+void nav_finished (tap_dance_state_t *state, void *user_data) {
+	int taps = tapState(state);
 
-	[TD_PAR] = ACTION_TAP_DANCE_FN(td_parenthesis),
+	switch (taps){
+		case SINGLE_TAP:
+			break;
+		case SINGLE_HOLD:
+			nav_mode.arrows = true;
+			break;
+		case DOUBLE_HOLD:
+			nav_mode.alt_nav = true;
+			break;
+	}
+}
+
+void nav_reset (tap_dance_state_t *state, void *user_data) {
+	nav_mode.arrows = false;
+	nav_mode.alt_nav = false;
+}
+
+tap_dance_action_t tap_dance_actions[] = {
+
+	[TD_NAV] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, nav_finished, nav_reset),
+
+	// [TD_TAB] = ACTION_TAP_DANCE_FN(td_tab),
+	// [TD_PAR] = ACTION_TAP_DANCE_FN(td_parenthesis),
 };
 
-// #endif
+#endif

@@ -38,11 +38,11 @@ setup:
 	git submodule foreach make git-submodule 
 
 	# copying files into folder under my own folder in qmk_firmware/keyboards/ in order to prevent naming collisions 
-	cp -a $(shell pwd)/linkers/. qmk_firmware/keyboards/badcombos
+	cp -a $(shell pwd)/linkers/ ./qmk_firmware/keyboards/badcombos
 
 links:
 	# this command is here mainly for debugging the adding of new keyboards	
 	rm -rf ./qmk_firmware/keyboards/badcombos
 
 	# copying files into folder under my own folder in qmk_firmware/keyboards/ in order to prevent naming collisions 
-	cp -a $(shell pwd)/linkers/.qmk_firmware/keyboards/badcombos
+	cp -a $(shell pwd)/linkers/ ./qmk_firmware/keyboards/badcombos

@@ -16,18 +16,18 @@ bool oled_task_user(void) {
         case _BASE:
             oled_write_P(PSTR("BASE-QWERTY\n"), false);
             break;
-        case _GAME:
-            oled_write_P(PSTR("BASE-GAMING\n"), false);
-            break;
+        // case _GAME:
+        //     oled_write_P(PSTR("BASE-GAMING\n"), false);
+        //     break;
         case _NAV:
             oled_write_P(PSTR("NAVIGATION\n"), false);
             break;
         case _NUM:
             oled_write_P(PSTR("NUMBERS\n"), false);
             break;
-        case _ADJ:
-            oled_write_P(PSTR("SETTINGS\n"), false);
-            break;            
+        // case _ADJ:
+        //     oled_write_P(PSTR("SETTINGS\n"), false);
+        //     break;
         default:
             // Or use the write_ln shortcut over adding '\n' to the end of your string
             oled_write_ln_P(PSTR("Undefined"), false);

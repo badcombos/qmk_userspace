@@ -2,16 +2,20 @@
 
 #include "layout.h"
 
+#ifdef CONSOLE_ENABLE
+    #include "features/combos.h"
+#endif
+
+#include "features/casemodes.h"
+
+
+
 #undef TAPPING_TERM
 #define TAPPING_TERM 150
 #define TAPPING_TERM_PER_KEY
 
-#define IGNORE_MOD_TAP_INTERRUPT
-
 #define LEADER_PER_KEY_TIMING
 #define LEADER_TIMEOUT 800
-
-// #define UNICODE_SELECTED_MODES UNICODE_MODE_WINCOMPOSE
 
 #ifdef AUTO_SHIFT_ENABLE
     #undef AUTO_SHIFT_TIMEOUT
@@ -38,7 +42,7 @@
 #endif
 
 #ifdef IS_MINI36
-    #define MASTER_RIGHT
+    #define MASTER_LEFT
 
     #ifdef RGB_MATRIX_ENABLE
     //#    define SPLIT_TRANSPORT_MIRROR
